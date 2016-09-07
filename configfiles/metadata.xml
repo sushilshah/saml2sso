@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Entities>
+    <ExtensionPackages>
+        <ExtensionPackage dependsOn="" description="" minimumThingWorxVersion="7.2.0" name="Wso2isSamlSSOv1" packageVersion="1.0.0" vendor="">
+            <JarResources>
+                <FileResource description="" file="wso2issamlssov1.jar" type="JAR"/>
+            </JarResources>
+        </ExtensionPackage>
+    </ExtensionPackages>
+    <Authenticators>
+        <Authenticator aspect.isEditableExtensionObject="true" className="com.flex.twx.security.samlsso.SAML2RequestHandlerAuthenticator" description="" enabled="false" name="SAML2RequestHandlerAuthenticator" priority="2" requiresChallenge="false" supportsSession="false"/>
+        <Authenticator aspect.isEditableExtensionObject="true" className="com.flex.twx.security.samlsso.SAML2ResponseHandlerAuthenticator" description="&#9;&#9;" enabled="false" name="SAML2ResponseHandlerAuthenticator" priority="1" requiresChallenge="false" supportsSession="false"/>
+    </Authenticators>
+</Entities>
