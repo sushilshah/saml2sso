@@ -143,8 +143,8 @@ class SampleSAML2Utilities
     throws Exception
   {
     byte[] compressedSamlRequest = compress(unencodedSamlRequest);
-    
-    String base64EncodedRequest = new String(base64Encoder.encode(compressedSamlRequest));
+
+    String base64EncodedRequest = new String(Base64.getEncoder().encode(compressedSamlRequest));
     String urlEncodedRequest = URLEncoder.encode(base64EncodedRequest, "UTF-8");
     
     return urlEncodedRequest;
@@ -157,7 +157,7 @@ class SampleSAML2Utilities
     
     String urlDecodedSamlResponse = URLDecoder.decode(urlEncodedSamlResponse, "UTF-8");
     //byte[] foo = Base64.getDecoder().decode(urlDecodedSamlResponse)
-    byte[] base64DecodedSamlResponse = Base64.decodeBase64(urlDecodedSamlResponse);
+    byte[] base64DecodedSamlResponse = Base64.getDecoder().decode(urlDecodedSamlResponse);
     byte[] inflatedSamlResponseByteArray = decompress(base64DecodedSamlResponse);
     String inflatedSamlResponse = new String(inflatedSamlResponseByteArray);
     
@@ -223,3 +223,4 @@ class SampleSAML2Utilities
     String userName;
   }
 }
+

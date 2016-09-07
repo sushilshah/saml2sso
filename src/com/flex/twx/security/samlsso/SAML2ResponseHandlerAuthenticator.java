@@ -3,12 +3,9 @@ package com.flex.twx.security.samlsso;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinitions;
-import com.thingworx.security.authentication.AuthenticatorException;
-import com.thingworx.security.authentication.CustomAuthenticator;
+import org.slf4j.Logger;
+
 import com.thingworx.common.RESTAPIConstants;
-import com.thingworx.common.RESTAPIConstants.Method;
-import com.thingworx.common.RESTAPIConstants.StatusCode;
 import com.thingworx.common.exceptions.InvalidRequestException;
 //import com.thingworx.common.utils.StringUtilities;
 import com.thingworx.logging.LogUtilities;
@@ -16,11 +13,6 @@ import com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinitions
 import com.thingworx.security.authentication.AuthenticationUtilities;
 import com.thingworx.security.authentication.AuthenticatorException;
 import com.thingworx.security.authentication.CustomAuthenticator;
-import com.thingworx.things.security.SecurityMonitorThing;
-import com.thingworx.types.collections.ConfigurationTableCollection;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
 
 @ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="The Thingworx Assertion Consumer Service URL for which this authenticator will handle/process the SAML2 Responses, should be the same as the ACS URL in the SAML2 Request Authenticator", baseType="STRING", aspects={"defaultValue:/Thingworx/Home"})}))})
 public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
@@ -84,10 +76,16 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	public boolean matchesAuthRequest(HttpServletRequest httpRequest) throws AuthenticatorException {
 	    boolean matches = false;
 	    
-	    String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
-	    
+	    //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
+	    String acsURL = null;
+		try {
+			acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    String uri = httpRequest.getRequestURI();
-	    if (StringUtilities.isNonEmpty(uri)) {
+	    if (uri != null && uri.length() > 0) {
 	      if (uri.equalsIgnoreCase(acsURL))
 	      {
 	        String sMethod = httpRequest.getMethod();

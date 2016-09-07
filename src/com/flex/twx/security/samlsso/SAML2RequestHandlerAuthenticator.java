@@ -44,8 +44,10 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    }
 	    catch (Throwable t)
 	    {
+	    	logger.error("Encountered error :" + t.getMessage() ) ;
 	      throw new AuthenticatorException(t);
 	    }
+	    logger.debug("**matchesAuthRequest return values :" + matches);
 	    return matches;
 	  }
 	  
@@ -54,13 +56,16 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	  {
 	    try
 	    {
-	    	String providerName = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SPName");
+	    	//String providerName = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SPName");
+	    	String providerName = "Thingworx";
 	      //String providerName = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "SPName");
 	      logger.debug("SAML ProviderName: " + providerName);
-	      String acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
+	      String acsURL = "http://localhost:8080/Thingworx/Home";
+	      //String acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
 	     //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
 	      logger.debug("SAML acsURL: " + acsURL);
-	      String ssoURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SSOURL");
+	      String ssoURL = " https://localhost:9443/samlsso?spEntityID=Thingworx"; 
+	      // String ssoURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SSOURL");
 	      //String ssoURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "SSOURL");
 	      logger.debug("SAML ssoURL: " + ssoURL);
 	      
