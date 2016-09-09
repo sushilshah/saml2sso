@@ -35,13 +35,8 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	    System.out.println("*** authenticate saml  response1 "  );
 	    try
 	    {
-	    	System.out.println("*** authenticate saml  response1.1 before getSAMLResponseData "  );
-	    	
-	    	/*String authnReqStr = httpRequest.getParameter("SAMLResponse").toString();
-	    	System.out.println("*** authnReqStr : " + authnReqStr );*/
 	    	
 	      //responseData = SampleSAML2Utilities.getSAMLResponseData(httpRequest);
-	      System.out.println("*** authenticate saml  response2 " + responseData);
 	      //after this line it is going to **matchesAuthRequest return values :true TODO trace it
 	      relayState = SampleSAML2Utilities.getRelayState(httpRequest);
 	      System.out.println("Relay state : " + relayState);
@@ -103,24 +98,16 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	        return false;
 	      }
 	    }
-	    catch (Throwable t)
-	    {
-	      throw new AuthenticatorException(t);
-	    }
+	    catch (Throwable t){throw new AuthenticatorException(t);}
 	    //end of ass saving stuff
 	    
 	    //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
 	    String acsURL = null;
-		try {
-			//acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
-			//acsURL = "http://localhost:8080/Thingworx/Home";
-			acsURL = "/Thingworx/Home";
-			logger.debug("Using ACS Url as" + acsURL);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
+		//acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
+		//acsURL = "http://localhost:8080/Thingworx/Home";
+		acsURL = "/Thingworx/Home";
+		logger.debug("Using ACS Url as" + acsURL);
+		
 	    String uri = httpRequest.getRequestURI();
 	    System.out.println("*** httpRequest.getRequestURI() : " + uri );
 	    if (uri != null && uri.length() > 0) {
@@ -153,13 +140,7 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	    
 	    String authnReqStr = httpRequest.getParameter("SAMLResponse").toString();
     	System.out.println("*** authnReqStr : " + authnReqStr );
-	    //saving ass 
-	    try {
-			SampleSAML2ResponseData responseData = SampleSAML2Utilities.getSAMLResponseData(httpRequest);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	   
 	    
 	    return matches;
 	}
