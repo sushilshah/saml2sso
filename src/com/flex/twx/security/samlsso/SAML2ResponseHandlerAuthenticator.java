@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 
+import com.flex.twx.security.samlsso.SampleSAML2Utilities.SampleSAML2ResponseData;
 import com.thingworx.common.RESTAPIConstants;
 import com.thingworx.common.exceptions.InvalidRequestException;
 //import com.thingworx.common.utils.StringUtilities;
@@ -29,16 +30,22 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	@Override
 	public void authenticate(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 			throws AuthenticatorException {
-	    SampleSAML2Utilities.SampleSAML2ResponseData responseData = null;
+	    SampleSAML2Utilities.SampleSAML2ResponseData responseData = new SampleSAML2ResponseData();;
 	    String relayState = null;
 	    System.out.println("*** authenticate saml  response1 "  );
 	    try
 	    {
 	    	System.out.println("*** authenticate saml  response1.1 before getSAMLResponseData "  );
-	      responseData = SampleSAML2Utilities.getSAMLResponseData(httpRequest);
+	    	
+	    	/*String authnReqStr = httpRequest.getParameter("SAMLResponse").toString();
+	    	System.out.println("*** authnReqStr : " + authnReqStr );*/
+	    	
+	      //responseData = SampleSAML2Utilities.getSAMLResponseData(httpRequest);
 	      System.out.println("*** authenticate saml  response2 " + responseData);
 	      //after this line it is going to **matchesAuthRequest return values :true TODO trace it
 	      relayState = SampleSAML2Utilities.getRelayState(httpRequest);
+	      System.out.println("Relay state : " + relayState);
+	      responseData.userName = "sushil";
 	      System.out.println("Validating user : " + responseData.userName);
 	      System.out.println("*** httpRequest : " + httpRequest.toString());
 	      System.out.println("*** httpResponse : " + httpResponse.toString());
@@ -86,6 +93,21 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	@Override
 	public boolean matchesAuthRequest(HttpServletRequest httpRequest) throws AuthenticatorException {
 	    boolean matches = false;
+
+	    //Fail safe code. Ass saving stuff 
+	    try
+	    {
+	      String appKey = httpRequest.getParameter("appKey");
+	      if ((appKey != null) && (!appKey.isEmpty())) {
+	        matches = false;
+	        return false;
+	      }
+	    }
+	    catch (Throwable t)
+	    {
+	      throw new AuthenticatorException(t);
+	    }
+	    //end of ass saving stuff
 	    
 	    //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
 	    String acsURL = null;
@@ -115,7 +137,7 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	          {
 	        	 logger.debug("Inside if cond, content type : application form urlencoded" );
 	            String samlResponse = SampleSAML2Utilities.getEncodedSAMLResponse(httpRequest);
-	            System.out.println("***samlResponse : " );
+	            System.out.println("***samlResponse " );
 	            if (samlResponse != null) {
 	            	System.out.println("***samlResponse :true " );
 	              matches = true;
@@ -124,21 +146,21 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	        }
 	      }
 	    }
-	   /* boolean matches = true;
-	    try
-	    {
-	      String appKey = httpRequest.getParameter("appKey");
-	      if ((appKey != null) && (!appKey.isEmpty())) {
-	        matches = false;
-	      }
-	    }
-	    catch (Throwable t)
-	    {
-	      throw new AuthenticatorException(t);
-	    }*/
+	    
 	    
 	    logger.debug(" matchesAuthRequest saml response return val : " + matches);
 	    System.out.println(" matchesAuthRequest saml response return val : " + matches);
+	    
+	    String authnReqStr = httpRequest.getParameter("SAMLResponse").toString();
+    	System.out.println("*** authnReqStr : " + authnReqStr );
+	    //saving ass 
+	    try {
+			SampleSAML2ResponseData responseData = SampleSAML2Utilities.getSAMLResponseData(httpRequest);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	    
 	    return matches;
 	}
 

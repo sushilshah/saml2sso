@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -57,8 +58,12 @@ class SampleSAML2Utilities
     throws IOException, DataFormatException
   {
 	  System.out.println("*** inside decompress");
-    Inflater inflater = new Inflater();
+    Inflater inflater = new Inflater(true);
+    
     System.out.println("setInput");
+    System.out.println("***** data ");
+    System.out.println(new String(data));
+    //System.out.println(Arrays.toString(data));
     inflater.setInput(data);
     System.out.println("ByteArrayOutputStream ");    
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
@@ -67,7 +72,7 @@ class SampleSAML2Utilities
     while (!inflater.finished())
     {
     	System.out.println("inflater.inflate ::: buffer:");
-    	System.out.println(buffer);
+    	System.out.println(Arrays.toString(buffer));
       int count = inflater.inflate(buffer);
       outputStream.write(buffer, 0, count);
     }
@@ -161,11 +166,12 @@ class SampleSAML2Utilities
   {
 	  System.out.println("***inside getSAMLResponseData");
     String urlEncodedSamlResponse = getEncodedSAMLResponse(httpRequest);
-    System.out.println("URLDecoder.decode");
+    System.out.println("URLDecoder.decode : " + urlEncodedSamlResponse);
     String urlDecodedSamlResponse = URLDecoder.decode(urlEncodedSamlResponse, "UTF-8");
     System.out.println("Base64.decodeBase64");
     byte[] base64DecodedSamlResponse = Base64.decodeBase64(urlDecodedSamlResponse);
     System.out.println("decompress(base64DecodedSamlResponse)");
+    System.out.println(base64DecodedSamlResponse.toString());
     String inflatedSamlResponse = null ;
     try{
     	System.out.println("base64DecodedSamlResponse ::: " +base64DecodedSamlResponse );
@@ -225,6 +231,10 @@ class SampleSAML2Utilities
     if (sra != null) {
       encodedSamlResponse = sra[0];
     }
+    System.out.println("*** encodedSamlResponse : " + encodedSamlResponse );
+    System.out.println("SAML RESPONSE : " + httpRequest.getParameter("SAMLResponse").toString());
+    /*encodedSamlResponse = httpRequest.getParameter("SAMLResponse").toString();
+    System.out.println("*** encodedSamlResponse : " + encodedSamlResponse);*/
     return encodedSamlResponse;
   }
   
