@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 
-@ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ProviderName", description="Name of the Provider (TWX Platform)", baseType="STRING", aspects={"defaultValue:Thingworx"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="Assertion Consumer Service URL", baseType="STRING", aspects={"defaultValue:http://localhost:8080/Thingworx/Home"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="SingleSignOnURL", description="URL to Single Sign On Page", baseType="STRING", aspects={"defaultValue:http://localhost:8081/auth-sample-saml2/login"})}))})
+@ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition
+		(name="ProviderName", description="Name of the Provider (TWX Platform)", baseType="STRING", aspects={"defaultValue:Thingworx"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="Assertion Consumer Service URL", baseType="STRING", aspects={"defaultValue:http://localhost:8080/Thingworx/Home"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition
+		(name="SingleSignOnURL1", description="URL to Single Sign On Page", baseType="STRING", aspects={"defaultValue:https://localhost:9443/samlsso?spEntityID=Thingworx"})}))})
 public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 
 	public static final Logger logger = LogUtilities.getInstance().getApplicationLogger(SAML2RequestHandlerAuthenticator.class);
@@ -47,7 +49,8 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    	logger.error("Encountered error :" + t.getMessage() ) ;
 	      throw new AuthenticatorException(t);
 	    }
-	    logger.debug("**matchesAuthRequest return values :" + matches);
+	    logger.debug("**matchesAuthRequest request values :" + matches);
+	    System.out.println("**matchesAuthRequest request values :" + matches);
 	    return matches;
 	  }
 	  
@@ -60,20 +63,25 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    	String providerName = "Thingworx";
 	      //String providerName = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "SPName");
 	      logger.debug("SAML ProviderName: " + providerName);
+	      System.out.println("SAML ProviderName: " + providerName);
 	      String acsURL = "http://localhost:8080/Thingworx/Home";
+	      //getConfigurationTable("foo").getFirstRow().getStringValue(name)
 	      //String acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
 	     //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
 	      logger.debug("SAML acsURL: " + acsURL);
-	      String ssoURL = " https://localhost:9443/samlsso?spEntityID=Thingworx"; 
+	      System.out.println("SAML acsURL: " + acsURL);
+	      String ssoURL = "https://localhost:9443/samlsso?spEntityID=Thingworx"; 
 	      // String ssoURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SSOURL");
 	      //String ssoURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "SSOURL");
 	      logger.debug("SAML ssoURL: " + ssoURL);
+	      System.out.println("SAML ssoURL: " + ssoURL);
 	      
 	      String samlRequest = SampleSAML2Utilities.generateSAMLRequest(providerName, acsURL);
 	      logger.debug("SAML Request: " + samlRequest);
 	      
 	      String relayState = SampleSAML2Utilities.createNewRelayState();
 	      logger.debug("SAML RelayState: " + relayState);
+	      System.out.println("SAML RelayState: " + relayState);
 	      
 	      StringBuilder htmlForm = new StringBuilder();
 	      htmlForm.append("<html><body>");

@@ -8,7 +8,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -21,7 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
-//import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,16 +56,22 @@ class SampleSAML2Utilities
   private static byte[] decompress(byte[] data)
     throws IOException, DataFormatException
   {
+	  System.out.println("*** inside decompress");
     Inflater inflater = new Inflater();
+    System.out.println("setInput");
     inflater.setInput(data);
-    
+    System.out.println("ByteArrayOutputStream ");    
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
     byte[] buffer = new byte['?'];
+    System.out.println("start while loop");
     while (!inflater.finished())
     {
+    	System.out.println("inflater.inflate ::: buffer:");
+    	System.out.println(buffer);
       int count = inflater.inflate(buffer);
       outputStream.write(buffer, 0, count);
     }
+    System.out.println("outputStream close");
     outputStream.close();
     byte[] output = outputStream.toByteArray();
     
@@ -144,7 +149,8 @@ class SampleSAML2Utilities
   {
     byte[] compressedSamlRequest = compress(unencodedSamlRequest);
 
-    String base64EncodedRequest = new String(Base64.getEncoder().encode(compressedSamlRequest));
+    Base64 base64Encoder = new Base64();
+    String base64EncodedRequest = new String(base64Encoder.encode(compressedSamlRequest));
     String urlEncodedRequest = URLEncoder.encode(base64EncodedRequest, "UTF-8");
     
     return urlEncodedRequest;
@@ -153,19 +159,32 @@ class SampleSAML2Utilities
   static SampleSAML2ResponseData getSAMLResponseData(HttpServletRequest httpRequest)
     throws Exception
   {
+	  System.out.println("***inside getSAMLResponseData");
     String urlEncodedSamlResponse = getEncodedSAMLResponse(httpRequest);
-    
+    System.out.println("URLDecoder.decode");
     String urlDecodedSamlResponse = URLDecoder.decode(urlEncodedSamlResponse, "UTF-8");
-    //byte[] foo = Base64.getDecoder().decode(urlDecodedSamlResponse)
-    byte[] base64DecodedSamlResponse = Base64.getDecoder().decode(urlDecodedSamlResponse);
-    byte[] inflatedSamlResponseByteArray = decompress(base64DecodedSamlResponse);
-    String inflatedSamlResponse = new String(inflatedSamlResponseByteArray);
+    System.out.println("Base64.decodeBase64");
+    byte[] base64DecodedSamlResponse = Base64.decodeBase64(urlDecodedSamlResponse);
+    System.out.println("decompress(base64DecodedSamlResponse)");
+    String inflatedSamlResponse = null ;
+    try{
+    	System.out.println("base64DecodedSamlResponse ::: " +base64DecodedSamlResponse );
+    	byte[] inflatedSamlResponseByteArray = decompress(base64DecodedSamlResponse);
+    	inflatedSamlResponse = new String(inflatedSamlResponseByteArray);	
+    }catch(Exception e){
+    	System.out.println("******** Exception occured ");
+    	System.out.println(e);
+    	e.printStackTrace();
+    }
     
+    
+    System.out.println("***return getSAMLResponseData");
     return parseSAMLResponse(inflatedSamlResponse);
   }
   
   private static SampleSAML2ResponseData parseSAMLResponse(String decodedSAMLResponse)
   {
+	  System.out.println("*** start parseSAMLResponse");
     SampleSAML2ResponseData d = new SampleSAML2ResponseData();
     try
     {
@@ -192,7 +211,9 @@ class SampleSAML2Utilities
     catch (Exception e)
     {
       logger.error("An error occurred parsing the SAML Response: " + e.getMessage());
+      System.out.println("An error occurred parsing the SAML Response: " + e.getMessage());
     }
+    System.out.println("return parseSAMLResponse");
     return d;
   }
   

@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="twx-lib/logback-classic-1.0.13.jar"/>
 	<classpathentry kind="lib" path="twx-lib/slf4j-api-1.7.12.jar"/>
 	<classpathentry kind="lib" path="twx-lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
