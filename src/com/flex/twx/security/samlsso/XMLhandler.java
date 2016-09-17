@@ -19,9 +19,11 @@ public class XMLhandler extends DefaultHandler {
         // Managing a LogoutRequest means that we are going to build a LogoutResponse
         if(qName.equals("saml2:NameID")){
         	System.out.println("saml2:NameID . format");
-        	System.out.println(attributes.getValue("Format"));
-        	System.out.println("saml2:NameID . qname");
-        	System.out.println(attributes.getValue(qName));
+        	System.out.println(attributes.getQName(0));
+        	
+        	 for(int i = 0; i < attributes.getLength(); i++) 
+                 System.out.println("Key : "  + attributes.getQName(i) + " value : "  + attributes.getValue(i));
+        	
         }
     	if (qName.equals("saml2p:Response")) {
             // The ID value of a request will be the LogoutResponse's InReponseTo attribute 
@@ -42,6 +44,11 @@ public class XMLhandler extends DefaultHandler {
         }   
     }
 
-   
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+         String foo = new String(ch, start, length);
+         System.out.println("Print foo : " + foo);
+        
+    }
 
 }
