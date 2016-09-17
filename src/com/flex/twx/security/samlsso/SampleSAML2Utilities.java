@@ -143,8 +143,6 @@ class SampleSAML2Utilities
     
     writer.flush();
     
-    System.out.println("***SAML Request unencoded: " + new String(baos.toByteArray()));
-    
     samlRequest = encode(baos.toByteArray());
     
     return samlRequest;
@@ -165,15 +163,12 @@ class SampleSAML2Utilities
   static SampleSAML2ResponseData getSAMLResponseData(HttpServletRequest httpRequest)
     throws Exception
   {
-	  System.out.println("*** START getSAMLResponseData");
 	  String responseMessage = httpRequest.getParameter("SAMLResponse").toString(); 
 	  
 	  String inflatedSamlResponse = null ;
-	  System.out.println("*** start building document factory");
 	  /*DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 	  documentBuilderFactory.setNamespaceAware(true);
 	  DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();*/
-	  System.out.println("*** before decode");
 	  byte[] base64DecodedResponse = null ;
 	  try {
 		

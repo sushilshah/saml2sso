@@ -10,9 +10,11 @@ import org.slf4j.Logger;
 import com.thingworx.common.RESTAPIConstants;
 import com.thingworx.common.exceptions.InvalidRequestException;
 import com.thingworx.logging.LogUtilities;
+import com.thingworx.metadata.FieldDefinition;
 import com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinitions;
 import com.thingworx.security.authentication.AuthenticatorException;
 import com.thingworx.security.authentication.CustomAuthenticator;
+import com.thingworx.types.primitives.IPrimitiveType;
 
 @ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition
 		(name="ProviderName", description="Name of the Provider (TWX Platform)", baseType="STRING", aspects={"defaultValue:Thingworx"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="Assertion Consumer Service URL", baseType="STRING", aspects={"defaultValue:http://localhost:8080/Thingworx/Home"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition
@@ -50,7 +52,6 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    	logger.error("Encountered error :" + t.getMessage() ) ;
 	      throw new AuthenticatorException(t);
 	    }
-	    System.out.println("**matches request : " + matches);
 	    return matches;
 	  }
 	  
@@ -60,6 +61,11 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    try
 	    {
 	    	String providerName = "Thingworx";
+	    	String foo = getConfigurationTable(CONFIGURATION_TABLENAME).getRowValue(CONFIGURATION_KEYNAME_ACSURL).getValue().toString();
+	    	System.out.println("*** configuratio table values");
+	    	System.out.println(foo);
+	    	
+	    	
 	      logger.debug("SAML ProviderName: " + providerName);
 
 	      String acsURL = "http://localhost:8080/Thingworx/Home";
