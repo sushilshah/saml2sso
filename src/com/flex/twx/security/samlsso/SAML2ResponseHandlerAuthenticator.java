@@ -52,7 +52,6 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} 
-			//after this line it is going to **matchesAuthRequest return values :true TODO trace it
 			relayState = SampleSAML2Utilities.getRelayState(httpRequest);
 			responseData.userName = xmLhandler.authResponse.userName;
 			if (SampleSAML2Utilities.isRelayStateValid(relayState))
@@ -113,7 +112,13 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 		//end 
 
 		String acsURL = null;
-		acsURL = "/Thingworx/Home";
+		try {
+			acsURL = getConfigurationTable("AuthenticatorConfiguration").getRowValue("ACSURL").getValue().toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("ACSURL is not configured");
+			e.printStackTrace();
+		} //"/Thingworx/Home";
 		logger.debug("Using ACS Url as" + acsURL);
 
 		String uri = httpRequest.getRequestURI();
