@@ -1,14 +1,20 @@
 package com.flex.twx.security.samlsso;
 
+import java.io.ByteArrayInputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
+import org.opensaml.xml.util.Base64;
 import org.slf4j.Logger;
 
 import com.flex.twx.security.samlsso.SampleSAML2Utilities.SampleSAML2ResponseData;
 import com.thingworx.common.RESTAPIConstants;
 import com.thingworx.common.exceptions.InvalidRequestException;
-//import com.thingworx.common.utils.StringUtilities;
 import com.thingworx.logging.LogUtilities;
 import com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinitions;
 import com.thingworx.security.authentication.AuthenticationUtilities;
@@ -37,17 +43,44 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	    {
 	    	
 	      //responseData = SampleSAML2Utilities.getSAMLResponseData(httpRequest);
+	    	
+	    	String responseMessage = httpRequest.getParameter("SAMLResponse").toString(); 
+	    	System.out.println("####responseMessage");
+	    	System.out.println(responseMessage);
+			 
+	    	System.out.println("***before decode");
+	    	
+			 byte[] base64DecodedResponse = Base64.decode(responseMessage.trim());
+			 System.out.println("base64DecodedResponse--" + base64DecodedResponse.length);
+			 String decodedString = new String(base64DecodedResponse);
+			 System.out.println("Decoded String" + decodedString);
+			 SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+
+			 // If we want to validate the doc we need to load the DTD
+			 // saxParserFactory.setValidating(true);
+
+			 // Get a SAXParser instance
+			 SAXParser saxParser;
+			 XMLhandler xmLhandler = new XMLhandler();
+			try {
+				saxParser = saxParserFactory.newSAXParser();
+				 // Parse it
+				 
+				 saxParser.parse(new ByteArrayInputStream(decodedString.getBytes()), xmLhandler);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} 
+			//byte[] base64DecodedResponse = org.opensaml.xml.util.Base64.decode(responseMessage);
+			System.out.println("***after decode");
 	      //after this line it is going to **matchesAuthRequest return values :true TODO trace it
 	      relayState = SampleSAML2Utilities.getRelayState(httpRequest);
 	      System.out.println("Relay state : " + relayState);
 	      responseData.userName = "sushil";
-	      System.out.println("Validating user : " + responseData.userName);
-	      System.out.println("*** httpRequest : " + httpRequest.toString());
-	      System.out.println("*** httpResponse : " + httpResponse.toString());
+	      System.out.println("Validating user ::: " + responseData.userName);
 	      if (SampleSAML2Utilities.isRelayStateValid(relayState))
 	      {
 	    	logger.debug("Validating user : " + responseData.userName);
-	    	System.out.println("Validating user : " + responseData.userName);
 	        AuthenticationUtilities.validateEnabledThingworxUser(responseData.userName);
 	        setCredentials(responseData.userName);
 	        AuthenticationUtilities.getSecurityMonitorThing().fireSuccessfulLoginEvent(responseData.userName, "");
@@ -64,7 +97,7 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	    catch (Exception eValidate)
 	    {
 	    	System.out.println("Exception: " + eValidate.getMessage());
-	    	System.out.println(eValidate);
+	    	eValidate.printStackTrace();
 	      try
 	      {
 	        AuthenticationUtilities.getSecurityMonitorThing().fireFailedLoginEvent(responseData.userName, eValidate.getMessage());
@@ -72,6 +105,8 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	      catch (Exception e)
 	      {
 	        logger.error("Unable to fire failed login event: " + e.getMessage());
+	        System.out.println("Unable to fire failed login event:");
+	        e.printStackTrace();
 	      }
 	      throw new AuthenticatorException(eValidate);
 	    }
@@ -99,34 +134,26 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	      }
 	    }
 	    catch (Throwable t){throw new AuthenticatorException(t);}
-	    //end of ass saving stuff
+	    //end 
 	    
-	    //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
 	    String acsURL = null;
-		//acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
-		//acsURL = "http://localhost:8080/Thingworx/Home";
 		acsURL = "/Thingworx/Home";
 		logger.debug("Using ACS Url as" + acsURL);
 		
 	    String uri = httpRequest.getRequestURI();
-	    System.out.println("*** httpRequest.getRequestURI() : " + uri );
 	    if (uri != null && uri.length() > 0) {
 	      if (uri.equalsIgnoreCase(acsURL))
 	      {
 	        String sMethod = httpRequest.getMethod();
 	        RESTAPIConstants.Method method = RESTAPIConstants.getMethod(sMethod);
-	        System.out.println("*** http method " + method + " :: " + RESTAPIConstants.Method.POST);
 	        if ((method != null) && (method == RESTAPIConstants.Method.POST))
 	        {
 	          String contentType = httpRequest.getContentType();
-	          System.out.println("***Content type : " + contentType);
 	          if (contentType.equalsIgnoreCase("application/x-www-form-urlencoded"))
 	          {
 	        	 logger.debug("Inside if cond, content type : application form urlencoded" );
 	            String samlResponse = SampleSAML2Utilities.getEncodedSAMLResponse(httpRequest);
-	            System.out.println("***samlResponse " );
 	            if (samlResponse != null) {
-	            	System.out.println("***samlResponse :true " );
 	              matches = true;
 	            }
 	          }
@@ -136,10 +163,9 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	    
 	    
 	    logger.debug(" matchesAuthRequest saml response return val : " + matches);
-	    System.out.println(" matchesAuthRequest saml response return val : " + matches);
+	    System.out.println(" matchesAuthRequest saml response return val ::: " + matches);
 	    
-	    String authnReqStr = httpRequest.getParameter("SAMLResponse").toString();
-    	System.out.println("*** authnReqStr : " + authnReqStr );
+	//    String authnReqStr = httpRequest.getParameter("SAMLResponse").toString();
 	   
 	    
 	    return matches;

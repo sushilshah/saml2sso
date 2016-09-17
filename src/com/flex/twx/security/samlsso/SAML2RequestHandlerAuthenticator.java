@@ -1,17 +1,18 @@
 package com.flex.twx.security.samlsso;
 
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+
 import com.thingworx.common.RESTAPIConstants;
-import com.thingworx.common.RESTAPIConstants.StatusCode;
 import com.thingworx.common.exceptions.InvalidRequestException;
 import com.thingworx.logging.LogUtilities;
 import com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinitions;
 import com.thingworx.security.authentication.AuthenticatorException;
 import com.thingworx.security.authentication.CustomAuthenticator;
-import com.thingworx.types.collections.ConfigurationTableCollection;
-import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
 
 @ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition
 		(name="ProviderName", description="Name of the Provider (TWX Platform)", baseType="STRING", aspects={"defaultValue:Thingworx"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="Assertion Consumer Service URL", baseType="STRING", aspects={"defaultValue:http://localhost:8080/Thingworx/Home"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition
@@ -49,8 +50,7 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    	logger.error("Encountered error :" + t.getMessage() ) ;
 	      throw new AuthenticatorException(t);
 	    }
-	    logger.debug("**matchesAuthRequest request values :" + matches);
-	    System.out.println("**matchesAuthRequest request values :" + matches);
+	    System.out.println("**matches request : " + matches);
 	    return matches;
 	  }
 	  
@@ -59,26 +59,15 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	  {
 	    try
 	    {
-	    	//String providerName = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SPName");
 	    	String providerName = "Thingworx";
-	      //String providerName = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "SPName");
 	      logger.debug("SAML ProviderName: " + providerName);
-	      System.out.println("SAML ProviderName: " + providerName);
+
 	      String acsURL = "http://localhost:8080/Thingworx/Home";
-	      //getConfigurationTable("foo").getFirstRow().getStringValue(name)
-	      //String acsURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("ACSURL");
-	     //String acsURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "ACSURL");
 	      logger.debug("SAML acsURL: " + acsURL);
-	      System.out.println("SAML acsURL: " + acsURL);
 	      String ssoURL = "https://localhost:9443/samlsso?spEntityID=Thingworx"; 
-	      // String ssoURL = (String) getConfigurationTable("AuthenticatorConfiguration").getFirstRow().getValue("SSOURL");
-	      //String ssoURL = (String)getConfigurationData().getValue("AuthenticatorConfiguration", "SSOURL");
 	      logger.debug("SAML ssoURL: " + ssoURL);
-	      System.out.println("SAML ssoURL: " + ssoURL);
 	      
 	      String samlRequest = SampleSAML2Utilities.generateSAMLRequest(providerName, acsURL);
-	      logger.debug("SAML Request: " + samlRequest);
-	      
 	      String relayState = SampleSAML2Utilities.createNewRelayState();
 	      logger.debug("SAML RelayState: " + relayState);
 	      System.out.println("SAML RelayState: " + relayState);
@@ -102,6 +91,7 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	    catch (Throwable t)
 	    {
 	      logger.error("An error occurred while attempting to send a SAML2 Authentication Request: " + t.getMessage());
+	      t.printStackTrace();
 	      throw new AuthenticatorException(new InvalidRequestException("Unable to login with IDP", RESTAPIConstants.StatusCode.STATUS_UNAUTHORIZED));
 	    }
 	  }

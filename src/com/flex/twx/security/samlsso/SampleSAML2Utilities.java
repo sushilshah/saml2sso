@@ -1,6 +1,8 @@
 package com.flex.twx.security.samlsso;
 
 import com.thingworx.logging.LogUtilities;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -22,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.codec.binary.Base64;
+import org.opensaml.xml.io.UnmarshallerFactory;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,11 +64,9 @@ class SampleSAML2Utilities
     Inflater inflater = new Inflater(true);
     
     System.out.println("setInput");
-    System.out.println("***** data ");
     System.out.println(new String(data));
     //System.out.println(Arrays.toString(data));
     inflater.setInput(data);
-    System.out.println("ByteArrayOutputStream ");    
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
     byte[] buffer = new byte['?'];
     System.out.println("start while loop");
@@ -142,7 +143,7 @@ class SampleSAML2Utilities
     
     writer.flush();
     
-    logger.debug("SAML Request unencoded: " + new String(baos.toByteArray()));
+    System.out.println("***SAML Request unencoded: " + new String(baos.toByteArray()));
     
     samlRequest = encode(baos.toByteArray());
     
@@ -164,17 +165,42 @@ class SampleSAML2Utilities
   static SampleSAML2ResponseData getSAMLResponseData(HttpServletRequest httpRequest)
     throws Exception
   {
+	  System.out.println("*** START getSAMLResponseData");
+	  String responseMessage = httpRequest.getParameter("SAMLResponse").toString(); 
+	  
+	  String inflatedSamlResponse = null ;
+	  System.out.println("*** start building document factory");
+	  /*DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+	  documentBuilderFactory.setNamespaceAware(true);
+	  DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();*/
+	  System.out.println("*** before decode");
+	  byte[] base64DecodedResponse = null ;
+	  try {
+		
+		  base64DecodedResponse = org.opensaml.xml.util.Base64.decode(responseMessage);
+	} catch (Exception e) {
+		System.err.println("###Cannot decode ");
+		e.printStackTrace();
+	}
+	  
+	  System.out.println("decompress(base64DecodedResponse)");
+	  System.out.println(new String(base64DecodedResponse));
+	  
+	  ByteArrayInputStream is = new ByteArrayInputStream(base64DecodedResponse);
+	 /* Document document = docBuilder.parse(is);
+	  Element element = document.getDocumentElement();*/
+	/*  UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
+	  Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(element);
+	  Response response = (Response) unmarshaller.unmarshall(element);*/
+	  /*
 	  System.out.println("***inside getSAMLResponseData");
     String urlEncodedSamlResponse = getEncodedSAMLResponse(httpRequest);
-    System.out.println("URLDecoder.decode : " + urlEncodedSamlResponse);
     String urlDecodedSamlResponse = URLDecoder.decode(urlEncodedSamlResponse, "UTF-8");
-    System.out.println("Base64.decodeBase64");
     byte[] base64DecodedSamlResponse = Base64.decodeBase64(urlDecodedSamlResponse);
     System.out.println("decompress(base64DecodedSamlResponse)");
-    System.out.println(base64DecodedSamlResponse.toString());
-    String inflatedSamlResponse = null ;
+    System.out.println(new String(base64DecodedSamlResponse));
+   
     try{
-    	System.out.println("base64DecodedSamlResponse ::: " +base64DecodedSamlResponse );
     	byte[] inflatedSamlResponseByteArray = decompress(base64DecodedSamlResponse);
     	inflatedSamlResponse = new String(inflatedSamlResponseByteArray);	
     }catch(Exception e){
@@ -184,8 +210,8 @@ class SampleSAML2Utilities
     }
     
     
-    System.out.println("***return getSAMLResponseData");
-    return parseSAMLResponse(inflatedSamlResponse);
+    System.out.println("***return getSAMLResponseData");*/
+    return null; //parseSAMLResponse(inflatedSamlResponse);
   }
   
   private static SampleSAML2ResponseData parseSAMLResponse(String decodedSAMLResponse)
@@ -231,8 +257,6 @@ class SampleSAML2Utilities
     if (sra != null) {
       encodedSamlResponse = sra[0];
     }
-    System.out.println("*** encodedSamlResponse : " + encodedSamlResponse );
-    System.out.println("SAML RESPONSE : " + httpRequest.getParameter("SAMLResponse").toString());
     /*encodedSamlResponse = httpRequest.getParameter("SAMLResponse").toString();
     System.out.println("*** encodedSamlResponse : " + encodedSamlResponse);*/
     return encodedSamlResponse;
