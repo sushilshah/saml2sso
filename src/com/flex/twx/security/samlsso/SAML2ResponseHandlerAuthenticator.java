@@ -10,7 +10,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.slf4j.Logger;
 
-import com.flex.twx.security.samlsso.SampleSAML2Utilities.SampleSAML2ResponseData;
 import com.thingworx.common.RESTAPIConstants;
 import com.thingworx.common.exceptions.InvalidRequestException;
 import com.thingworx.logging.LogUtilities;
@@ -31,35 +30,31 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	@Override
 	public void authenticate(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 			throws AuthenticatorException {
-		SampleSAML2Utilities.SampleSAML2ResponseData responseData = new SampleSAML2ResponseData();;
 		String relayState = null;
+		SAXParser saxParser;
+		XMLhandler xmLhandler = new XMLhandler();
+
 		try
 		{
 			String responseMessage = httpRequest.getParameter("SAMLResponse").toString(); 
 			// Get a SAXParser instance
-			SAXParser saxParser;
-			XMLhandler xmLhandler = new XMLhandler();
-			try {
-				Decoder decoeder = java.util.Base64.getDecoder();
-				byte[] base64DecodedResponse = decoeder.decode(responseMessage);
-				String decodedString = new String(base64DecodedResponse);
-				SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 
-				saxParser = saxParserFactory.newSAXParser();
-				// Parse it
-				saxParser.parse(new ByteArrayInputStream(decodedString.getBytes()), xmLhandler);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} 
+			Decoder decoeder = java.util.Base64.getDecoder();
+			byte[] base64DecodedResponse = decoeder.decode(responseMessage);
+			String decodedString = new String(base64DecodedResponse);
+			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+			saxParser = saxParserFactory.newSAXParser();
+			// Parse it
+			saxParser.parse(new ByteArrayInputStream(decodedString.getBytes()), xmLhandler);
+
 			relayState = SampleSAML2Utilities.getRelayState(httpRequest);
-			responseData.userName = xmLhandler.authResponse.userName;
+
 			if (SampleSAML2Utilities.isRelayStateValid(relayState))
 			{
-				logger.debug("Validating user : " + responseData.userName);
-				AuthenticationUtilities.validateEnabledThingworxUser(responseData.userName);
-				setCredentials(responseData.userName);
-				AuthenticationUtilities.getSecurityMonitorThing().fireSuccessfulLoginEvent(responseData.userName, "");
+				logger.debug("Validating user : " + xmLhandler.authResponse.userName);
+				AuthenticationUtilities.validateEnabledThingworxUser(xmLhandler.authResponse.userName);
+				setCredentials(xmLhandler.authResponse.userName);
+				AuthenticationUtilities.getSecurityMonitorThing().fireSuccessfulLoginEvent(xmLhandler.authResponse.userName, "");
 				logger.debug("saml relay state : " + relayState);
 				SampleSAML2Utilities.deleteNewRelayState(relayState);
 			}
@@ -75,7 +70,7 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			eValidate.printStackTrace();
 			try
 			{
-				AuthenticationUtilities.getSecurityMonitorThing().fireFailedLoginEvent(responseData.userName, eValidate.getMessage());
+				AuthenticationUtilities.getSecurityMonitorThing().fireFailedLoginEvent(xmLhandler.authResponse.userName, eValidate.getMessage());
 			}
 			catch (Exception e)
 			{
@@ -118,7 +113,7 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			// TODO Auto-generated catch block
 			logger.error("ACSURL is not configured");
 			e.printStackTrace();
-		} //"/Thingworx/Home";
+		} 
 		logger.debug("Using ACS Url as" + acsURL);
 
 		String uri = httpRequest.getRequestURI();

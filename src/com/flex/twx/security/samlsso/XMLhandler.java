@@ -43,8 +43,6 @@ public class XMLhandler extends DefaultHandler {
         if(isNameID){
         	String userName = new String(ch, start, length);
         	authResponse.userName = userName.split("@")[0];
-        	System.out.println("AUTH USER NAME ");
-        	System.out.println(authResponse.userName);
         }
         
     }

@@ -1,12 +1,8 @@
 package com.flex.twx.security.samlsso;
 
-import com.thingworx.logging.LogUtilities;
-
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,18 +14,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.commons.codec.binary.Base64;
-import org.opensaml.xml.io.UnmarshallerFactory;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import com.thingworx.logging.LogUtilities;
 
 class SampleSAML2Utilities
 {
@@ -160,55 +159,7 @@ class SampleSAML2Utilities
     return urlEncodedRequest;
   }
   
-  static SampleSAML2ResponseData getSAMLResponseData(HttpServletRequest httpRequest)
-    throws Exception
-  {
-	  String responseMessage = httpRequest.getParameter("SAMLResponse").toString(); 
-	  
-	  String inflatedSamlResponse = null ;
-	  /*DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-	  documentBuilderFactory.setNamespaceAware(true);
-	  DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();*/
-	  byte[] base64DecodedResponse = null ;
-	  try {
-		
-		  base64DecodedResponse = org.opensaml.xml.util.Base64.decode(responseMessage);
-	} catch (Exception e) {
-		System.err.println("###Cannot decode ");
-		e.printStackTrace();
-	}
-	  
-	  System.out.println("decompress(base64DecodedResponse)");
-	  System.out.println(new String(base64DecodedResponse));
-	  
-	  ByteArrayInputStream is = new ByteArrayInputStream(base64DecodedResponse);
-	 /* Document document = docBuilder.parse(is);
-	  Element element = document.getDocumentElement();*/
-	/*  UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
-	  Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(element);
-	  Response response = (Response) unmarshaller.unmarshall(element);*/
-	  /*
-	  System.out.println("***inside getSAMLResponseData");
-    String urlEncodedSamlResponse = getEncodedSAMLResponse(httpRequest);
-    String urlDecodedSamlResponse = URLDecoder.decode(urlEncodedSamlResponse, "UTF-8");
-    byte[] base64DecodedSamlResponse = Base64.decodeBase64(urlDecodedSamlResponse);
-    System.out.println("decompress(base64DecodedSamlResponse)");
-    System.out.println(new String(base64DecodedSamlResponse));
-   
-    try{
-    	byte[] inflatedSamlResponseByteArray = decompress(base64DecodedSamlResponse);
-    	inflatedSamlResponse = new String(inflatedSamlResponseByteArray);	
-    }catch(Exception e){
-    	System.out.println("******** Exception occured ");
-    	System.out.println(e);
-    	e.printStackTrace();
-    }
-    
-    
-    System.out.println("***return getSAMLResponseData");*/
-    return null; //parseSAMLResponse(inflatedSamlResponse);
-  }
-  
+
   private static SampleSAML2ResponseData parseSAMLResponse(String decodedSAMLResponse)
   {
 	  System.out.println("*** start parseSAMLResponse");
