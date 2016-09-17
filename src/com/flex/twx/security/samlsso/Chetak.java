@@ -95,8 +95,8 @@ public class Chetak {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 
-
-		
+		System.out.println("xmLhandler.authResponse.userName");
+		System.out.println(xmLhandler.authResponse.userName);
 
 		 // Return the SamlVO
 		// return null;
