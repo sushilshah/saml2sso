@@ -1,6 +1,7 @@
 package com.flex.twx.security.samlsso;
 
 import java.io.ByteArrayInputStream;
+import java.util.Base64.Decoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,13 +50,7 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	    	System.out.println(responseMessage);
 			 
 	    	System.out.println("***before decode");
-	    	
-			 byte[] base64DecodedResponse = Base64.decode(responseMessage.trim());
-			 System.out.println("base64DecodedResponse--" + base64DecodedResponse.length);
-			 String decodedString = new String(base64DecodedResponse);
-			 System.out.println("Decoded String" + decodedString);
-			 SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-
+	
 			 // If we want to validate the doc we need to load the DTD
 			 // saxParserFactory.setValidating(true);
 
@@ -63,6 +58,13 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			 SAXParser saxParser;
 			 XMLhandler xmLhandler = new XMLhandler();
 			try {
+				 Decoder decoeder = java.util.Base64.getDecoder();
+					byte[] base64DecodedResponse = decoeder.decode(responseMessage);
+					 String decodedString = new String(base64DecodedResponse);
+					System.out.println("VALUE OF FOO");
+					System.out.println(decodedString);
+				 SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+
 				saxParser = saxParserFactory.newSAXParser();
 				 // Parse it
 				 
