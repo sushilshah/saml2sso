@@ -27,26 +27,21 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	private static final String CONFIGURATION_KEYNAME_SSOURL = "SingleSignOnURL";
 	private static final String CONFIGURATION_KEYNAME_ACSURL = "ACSURL";
 
-	public SAML2RequestHandlerAuthenticator()
-	{
+	public SAML2RequestHandlerAuthenticator(){
 		setPriority(2);
 		setSupportsSession(false);
 	}
 
 	public boolean matchesAuthRequest(HttpServletRequest httpRequest)
-			throws AuthenticatorException
-	{
+			throws AuthenticatorException{
 		boolean matches = true;
-		try
-		{
+		try{
 			String appKey = httpRequest.getParameter("appKey");
 			if ((appKey != null) && (!appKey.isEmpty())) {
 				matches = false;
 				logger.debug("**Request received with AppKey");
 			}
-		}
-		catch (Throwable t)
-		{
+		}catch (Throwable t){
 			logger.error("Encountered error :" + t.getMessage() ) ;
 			throw new AuthenticatorException(t);
 		}
@@ -56,8 +51,7 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 	public void authenticate(HttpServletRequest httpRequests, HttpServletResponse httpResponse)
 			throws AuthenticatorException
 	{
-		try
-		{
+		try{
 			String providerName = getConfigurationTable(CONFIGURATION_TABLENAME).getRowValue(CONFIGURATION_KEYNAME_PROVIDERNAME).getValue().toString(); //"Thingworx";
 			logger.debug("SAML ProviderName: " + providerName);
 
@@ -87,9 +81,7 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 			writer.append(htmlForm.toString());
 			writer.flush();
 			writer.close();
-		}
-		catch (Throwable t)
-		{
+		}catch (Throwable t){
 			logger.error("An error occurred while attempting to send a SAML2 Authentication Request: " + t.getMessage());
 			t.printStackTrace();
 			throw new AuthenticatorException(new InvalidRequestException("Unable to login with IDP", RESTAPIConstants.StatusCode.STATUS_UNAUTHORIZED));

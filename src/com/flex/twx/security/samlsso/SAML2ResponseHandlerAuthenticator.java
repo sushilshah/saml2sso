@@ -44,6 +44,8 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			String decodedString = new String(base64DecodedResponse);
 			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 			saxParser = saxParserFactory.newSAXParser();
+			System.out.println("SAML Response : ");
+			System.out.println(decodedString);
 			// Parse it
 			saxParser.parse(new ByteArrayInputStream(decodedString.getBytes()), xmLhandler);
 
@@ -58,27 +60,20 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 				logger.debug("saml relay state : " + relayState);
 				SampleSAML2Utilities.deleteNewRelayState(relayState);
 			}
-			else
-			{
+			else{
 				logger.error("Invalid relay state received: " + relayState);
 				throw new Exception("Invalid request received");
 			}
-		}
-		catch (Exception eValidate)
-		{
+		}catch (Exception eValidate){
 			System.out.println("Exception: " + eValidate.getMessage());
 			eValidate.printStackTrace();
-			try
-			{
+			try{
 				AuthenticationUtilities.getSecurityMonitorThing().fireFailedLoginEvent(xmLhandler.authResponse.userName, eValidate.getMessage());
-			}
-			catch (Exception e)
-			{
+			}catch (Exception e){
 				logger.error("Unable to fire failed login event: " + e.getMessage());
 				System.out.println("Unable to fire failed login event:");
 				e.printStackTrace();
-			}
-			throw new AuthenticatorException(eValidate);
+			}throw new AuthenticatorException(eValidate);
 		}
 	}
 
@@ -95,15 +90,13 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 		boolean matches = false;
 
 		//Fail safe code. Ass saving stuff 
-		try
-		{
+		try{
 			String appKey = httpRequest.getParameter("appKey");
 			if ((appKey != null) && (!appKey.isEmpty())) {
 				matches = false;
 				return false;
 			}
-		}
-		catch (Throwable t){throw new AuthenticatorException(t);}
+		}catch (Throwable t){throw new AuthenticatorException(t);}
 		//end 
 
 		String acsURL = null;

@@ -36,8 +36,7 @@ class SampleSAML2Utilities
   private static ConcurrentHashMap<String, Date> _relayStateTokens = new ConcurrentHashMap();
   
   private static byte[] compress(byte[] data)
-    throws IOException
-  {
+    throws IOException{
     Deflater deflater = new Deflater();
     deflater.setInput(data);
     
@@ -45,8 +44,7 @@ class SampleSAML2Utilities
     
     deflater.finish();
     byte[] buffer = new byte['?'];
-    while (!deflater.finished())
-    {
+    while (!deflater.finished()){
       int count = deflater.deflate(buffer);
       outputStream.write(buffer, 0, count);
     }
@@ -57,8 +55,7 @@ class SampleSAML2Utilities
   }
   
   private static byte[] decompress(byte[] data)
-    throws IOException, DataFormatException
-  {
+    throws IOException, DataFormatException{
 	  System.out.println("*** inside decompress");
     Inflater inflater = new Inflater(true);
     
@@ -69,8 +66,7 @@ class SampleSAML2Utilities
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
     byte[] buffer = new byte['?'];
     System.out.println("start while loop");
-    while (!inflater.finished())
-    {
+    while (!inflater.finished()){
     	System.out.println("inflater.inflate ::: buffer:");
     	System.out.println(Arrays.toString(buffer));
       int count = inflater.inflate(buffer);
@@ -84,29 +80,25 @@ class SampleSAML2Utilities
   }
   
   static String createNewRelayState()
-    throws Exception
-  {
+    throws Exception{
     String token = UUID.randomUUID().toString();
     _relayStateTokens.put(token, new Date());
     return token;
   }
   
   static void deleteNewRelayState(String relayState)
-    throws Exception
-  {
+    throws Exception{
     _relayStateTokens.remove(relayState);
   }
   
-  static boolean isRelayStateValid(String relayState)
-  {
+  static boolean isRelayStateValid(String relayState){
     boolean isValid = false;
     isValid = _relayStateTokens.containsKey(relayState);
     return isValid;
   }
   
   static String generateSAMLRequest(String providerName, String acsURL)
-    throws Exception
-  {
+    throws Exception{
     String samlRequest = null;
     
     String id = "_" + UUID.randomUUID().toString();
@@ -148,8 +140,7 @@ class SampleSAML2Utilities
   }
   
   private static String encode(byte[] unencodedSamlRequest)
-    throws Exception
-  {
+    throws Exception{
     byte[] compressedSamlRequest = compress(unencodedSamlRequest);
 
     Base64 base64Encoder = new Base64();
@@ -160,12 +151,10 @@ class SampleSAML2Utilities
   }
   
 
-  private static SampleSAML2ResponseData parseSAMLResponse(String decodedSAMLResponse)
-  {
+  private static SampleSAML2ResponseData parseSAMLResponse(String decodedSAMLResponse){
 	  System.out.println("*** start parseSAMLResponse");
     SampleSAML2ResponseData d = new SampleSAML2ResponseData();
-    try
-    {
+    try{
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = dbFactory.newDocumentBuilder();
       InputSource is = new InputSource(new StringReader(decodedSAMLResponse));
@@ -174,20 +163,16 @@ class SampleSAML2Utilities
       Element element = doc.getDocumentElement();
       
       NodeList nl = element.getElementsByTagName("saml:Subject");
-      if ((nl != null) && (nl.getLength() > 0))
-      {
+      if ((nl != null) && (nl.getLength() > 0)){
         Element el = (Element)nl.item(0);
         
         NodeList nl2 = el.getElementsByTagName("saml:NameID");
-        if ((nl2 != null) && (nl2.getLength() > 0))
-        {
+        if ((nl2 != null) && (nl2.getLength() > 0)){
           Element el2 = (Element)nl2.item(0);
           d.userName = el2.getTextContent();
         }
       }
-    }
-    catch (Exception e)
-    {
+    }catch (Exception e){
       logger.error("An error occurred parsing the SAML Response: " + e.getMessage());
       System.out.println("An error occurred parsing the SAML Response: " + e.getMessage());
     }
@@ -195,8 +180,7 @@ class SampleSAML2Utilities
     return d;
   }
   
-  static String getEncodedSAMLResponse(HttpServletRequest httpRequest)
-  {
+  static String getEncodedSAMLResponse(HttpServletRequest httpRequest){
     String encodedSamlResponse = null;
     Map<String, String[]> paramMap = httpRequest.getParameterMap();
     String[] sra = (String[])paramMap.get("SAMLResponse");
@@ -208,8 +192,7 @@ class SampleSAML2Utilities
     return encodedSamlResponse;
   }
   
-  static String getRelayState(HttpServletRequest httpRequest)
-  {
+  static String getRelayState(HttpServletRequest httpRequest){
     String relayState = null;
     Map<String, String[]> paramMap = httpRequest.getParameterMap();
     String[] rs = (String[])paramMap.get("RelayState");
