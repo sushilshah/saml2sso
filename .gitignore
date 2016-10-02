@@ -1,1 +1,3 @@
 *.class
+build/distributions/Wso2isSamlSSOv1.zip
+bin/wso2issamlssov1.jar
