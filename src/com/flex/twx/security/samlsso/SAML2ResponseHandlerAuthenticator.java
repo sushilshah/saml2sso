@@ -17,6 +17,7 @@ import com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinitions
 import com.thingworx.security.authentication.AuthenticationUtilities;
 import com.thingworx.security.authentication.AuthenticatorException;
 import com.thingworx.security.authentication.CustomAuthenticator;
+import com.thingworx.security.users.User;
 
 @ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="The Thingworx Assertion Consumer Service URL for which this authenticator will handle/process the SAML2 Responses, should be the same as the ACS URL in the SAML2 Request Authenticator", baseType="STRING", aspects={"defaultValue:/Thingworx/Home"})}))})
 public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
@@ -54,11 +55,18 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			if (SampleSAML2Utilities.isRelayStateValid(relayState))
 			{
 				logger.debug("Validating user : " + xmLhandler.authResponse.userName);
-				AuthenticationUtilities.validateEnabledThingworxUser(xmLhandler.authResponse.userName);
-				setCredentials(xmLhandler.authResponse.userName);
-				AuthenticationUtilities.getSecurityMonitorThing().fireSuccessfulLoginEvent(xmLhandler.authResponse.userName, "");
-				logger.debug("saml relay state : " + relayState);
-				SampleSAML2Utilities.deleteNewRelayState(relayState);
+				//Goes to infinite loop if user is not present in thingworx. 
+				//TODO Handle it
+				User validateUser = AuthenticationUtilities.validateEnabledThingworxUser(xmLhandler.authResponse.userName);
+				if(validateUser != null){
+					setCredentials(xmLhandler.authResponse.userName);
+					AuthenticationUtilities.getSecurityMonitorThing().fireSuccessfulLoginEvent(xmLhandler.authResponse.userName, "");
+					logger.debug("saml relay state : " + relayState);
+					SampleSAML2Utilities.deleteNewRelayState(relayState);
+				}else{
+					throw new AuthenticatorException("Not a valid user : " + xmLhandler.authResponse.userName);
+				}
+				
 			}
 			else{
 				logger.error("Invalid relay state received: " + relayState);
