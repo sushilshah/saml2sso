@@ -7,7 +7,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-
+/**
+ * 
+ * @author SU351310
+ *
+ */
 public class XMLhandler extends DefaultHandler {
 
 	  class AuthResponse{

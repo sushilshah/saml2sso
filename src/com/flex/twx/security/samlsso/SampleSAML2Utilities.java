@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -29,7 +28,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.thingworx.logging.LogUtilities;
-
+/**
+ * 
+ * @author SU351310
+ *
+ */
 class SampleSAML2Utilities
 {
   static final Logger logger = LogUtilities.getInstance().getApplicationLogger(SampleSAML2Utilities.class);
@@ -59,20 +62,13 @@ class SampleSAML2Utilities
 	  System.out.println("*** inside decompress");
     Inflater inflater = new Inflater(true);
     
-    System.out.println("setInput");
-    System.out.println(new String(data));
-    //System.out.println(Arrays.toString(data));
     inflater.setInput(data);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
     byte[] buffer = new byte['?'];
-    System.out.println("start while loop");
     while (!inflater.finished()){
-    	System.out.println("inflater.inflate ::: buffer:");
-    	System.out.println(Arrays.toString(buffer));
       int count = inflater.inflate(buffer);
       outputStream.write(buffer, 0, count);
     }
-    System.out.println("outputStream close");
     outputStream.close();
     byte[] output = outputStream.toByteArray();
     

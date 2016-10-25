@@ -18,7 +18,11 @@ import com.thingworx.security.authentication.AuthenticationUtilities;
 import com.thingworx.security.authentication.AuthenticatorException;
 import com.thingworx.security.authentication.CustomAuthenticator;
 import com.thingworx.security.users.User;
-
+/**
+ * 
+ * @author SU351310
+ *
+ */
 @ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="The Thingworx Assertion Consumer Service URL for which this authenticator will handle/process the SAML2 Responses, should be the same as the ACS URL in the SAML2 Request Authenticator", baseType="STRING", aspects={"defaultValue:/Thingworx/Home"})}))})
 public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	public static final Logger logger = LogUtilities.getInstance().getApplicationLogger(SAML2ResponseHandlerAuthenticator.class);
@@ -45,18 +49,13 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			String decodedString = new String(base64DecodedResponse);
 			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 			saxParser = saxParserFactory.newSAXParser();
-			System.out.println("SAML Response : ");
-			System.out.println(decodedString);
 			// Parse it
 			saxParser.parse(new ByteArrayInputStream(decodedString.getBytes()), xmLhandler);
-
 			relayState = SampleSAML2Utilities.getRelayState(httpRequest);
 
 			if (SampleSAML2Utilities.isRelayStateValid(relayState))
 			{
 				logger.debug("Validating user : " + xmLhandler.authResponse.userName);
-				//Goes to infinite loop if user is not present in thingworx. 
-				//TODO Handle it
 				User validateUser = AuthenticationUtilities.validateEnabledThingworxUser(xmLhandler.authResponse.userName);
 				if(validateUser != null){
 					setCredentials(xmLhandler.authResponse.userName);
@@ -97,7 +96,6 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 	public boolean matchesAuthRequest(HttpServletRequest httpRequest) throws AuthenticatorException {
 		boolean matches = false;
 
-		//Fail safe code. Ass saving stuff 
 		try{
 			String appKey = httpRequest.getParameter("appKey");
 			if ((appKey != null) && (!appKey.isEmpty())) {
@@ -105,14 +103,12 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 				return false;
 			}
 		}catch (Throwable t){throw new AuthenticatorException(t);}
-		//end 
 
 		String acsURL = null;
 		try {
 			acsURL = getConfigurationTable("AuthenticatorConfiguration").getRowValue("ACSURL").getValue().toString();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("ACSURL is not configured");
+			logger.error("ACSURL is not configured : " + e);
 			e.printStackTrace();
 		} 
 		logger.debug("Using ACS Url as" + acsURL);

@@ -64,7 +64,6 @@ public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 			String samlRequest = SampleSAML2Utilities.generateSAMLRequest(providerName, acsURL);
 			String relayState = SampleSAML2Utilities.createNewRelayState();
 			logger.debug("SAML RelayState: " + relayState);
-			System.out.println("SAML RelayState: " + relayState);
 
 			StringBuilder htmlForm = new StringBuilder();
 			htmlForm.append("<html><body>");
