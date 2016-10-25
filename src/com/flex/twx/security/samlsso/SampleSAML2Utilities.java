@@ -147,34 +147,7 @@ class SampleSAML2Utilities
   }
   
 
-  private static SampleSAML2ResponseData parseSAMLResponse(String decodedSAMLResponse){
-	  System.out.println("*** start parseSAMLResponse");
-    SampleSAML2ResponseData d = new SampleSAML2ResponseData();
-    try{
-      DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = dbFactory.newDocumentBuilder();
-      InputSource is = new InputSource(new StringReader(decodedSAMLResponse));
-      Document doc = builder.parse(is);
-      
-      Element element = doc.getDocumentElement();
-      
-      NodeList nl = element.getElementsByTagName("saml:Subject");
-      if ((nl != null) && (nl.getLength() > 0)){
-        Element el = (Element)nl.item(0);
-        
-        NodeList nl2 = el.getElementsByTagName("saml:NameID");
-        if ((nl2 != null) && (nl2.getLength() > 0)){
-          Element el2 = (Element)nl2.item(0);
-          d.userName = el2.getTextContent();
-        }
-      }
-    }catch (Exception e){
-      logger.error("An error occurred parsing the SAML Response: " + e.getMessage());
-      System.out.println("An error occurred parsing the SAML Response: " + e.getMessage());
-    }
-    System.out.println("return parseSAMLResponse");
-    return d;
-  }
+ 
   
   static String getEncodedSAMLResponse(HttpServletRequest httpRequest){
     String encodedSamlResponse = null;
@@ -183,8 +156,6 @@ class SampleSAML2Utilities
     if (sra != null) {
       encodedSamlResponse = sra[0];
     }
-    /*encodedSamlResponse = httpRequest.getParameter("SAMLResponse").toString();
-    System.out.println("*** encodedSamlResponse : " + encodedSamlResponse);*/
     return encodedSamlResponse;
   }
   
