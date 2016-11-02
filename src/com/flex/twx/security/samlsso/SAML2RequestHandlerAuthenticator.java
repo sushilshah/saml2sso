@@ -16,7 +16,7 @@ import com.thingworx.security.authentication.CustomAuthenticator;
 
 @ThingworxConfigurationTableDefinitions(tables={@com.thingworx.metadata.annotations.ThingworxConfigurationTableDefinition(name="AuthenticatorConfiguration", description="Authenticator Configuration", isMultiRow=false, dataShape=@com.thingworx.metadata.annotations.ThingworxDataShapeDefinition(fields={@com.thingworx.metadata.annotations.ThingworxFieldDefinition
 		(name="ProviderName", description="Name of the Provider (TWX Platform)", baseType="STRING", aspects={"defaultValue:Thingworx"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition(name="ACSURL", description="Assertion Consumer Service URL", baseType="STRING", aspects={"defaultValue:http://localhost:8080/Thingworx/Home"}), @com.thingworx.metadata.annotations.ThingworxFieldDefinition
-		(name="SingleSignOnURL", description="URL to Single Sign On Page", baseType="STRING", aspects={"defaultValue:https://localhost:9443/samlsso?spEntityID=Thingworx"})}))})
+		(name="SingleSignOnURL", description="URL to Single Sign On Page", baseType="STRING", aspects={"defaultValue:https://ec2-52-66-14-73.ap-south-1.compute.amazonaws.com:9443/samlsso?spEntityID=Thingworx"})}))})
 public class SAML2RequestHandlerAuthenticator extends CustomAuthenticator {
 
 	public static final Logger logger = LogUtilities.getInstance().getApplicationLogger(SAML2RequestHandlerAuthenticator.class);

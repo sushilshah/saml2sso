@@ -39,12 +39,12 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 		String relayState = null;
 		SAXParser saxParser;
 		XMLhandler xmLhandler = new XMLhandler();
-
+		System.out.println("ENter Response authenticate");
 		try
 		{
 			String responseMessage = httpRequest.getParameter("SAMLResponse").toString(); 
 			// Get a SAXParser instance
-
+			System.out.println("*** Request received ");
 			Decoder decoeder = java.util.Base64.getDecoder();
 			byte[] base64DecodedResponse = decoeder.decode(responseMessage);
 			String decodedString = new String(base64DecodedResponse);
@@ -57,13 +57,16 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			if (SampleSAML2Utilities.isRelayStateValid(relayState))
 			{
 				logger.debug("Validating user : " + xmLhandler.authResponse.userName);
+				System.out.println("****Validating user : " + xmLhandler.authResponse.userName);
 				User validateUser = AuthenticationUtilities.validateEnabledThingworxUser(xmLhandler.authResponse.userName);
+				System.out.println("**** validateUser : " + validateUser);
 				if(validateUser != null){
-					setCredentials(xmLhandler.authResponse.userName);
+					this.setCredentials(xmLhandler.authResponse.userName);
 					AuthenticationUtilities.getSecurityMonitorThing().fireSuccessfulLoginEvent(xmLhandler.authResponse.userName, "");
 					logger.debug("saml relay state : " + relayState);
 					SampleSAML2Utilities.deleteNewRelayState(relayState);
 				}else{
+					System.out.println("Not a valid user : " + xmLhandler.authResponse.userName);
 					throw new AuthenticatorException("Not a valid user : " + xmLhandler.authResponse.userName);
 				}
 				

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Entities>
     <ExtensionPackages>
-        <ExtensionPackage dependsOn="" description="" minimumThingWorxVersion="7.2.0" name="Wso2isSamlSSOv1" packageVersion="1.0.0" vendor="">
+        <ExtensionPackage dependsOn="" description="" minimumThingWorxVersion="7.2.0" name="Saml2SSOv1" packageVersion="1.0.0" vendor="">
             <JarResources>
-                <FileResource description="" file="wso2issamlssov1.jar" type="JAR"/>
+                <FileResource description="" file="saml2ssov1.jar" type="JAR"/>
             </JarResources>
         </ExtensionPackage>
     </ExtensionPackages>

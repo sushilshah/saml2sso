@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<project name="Wso2isSamlSSOv1" basedir="." default="build"> 
+<project name="Saml2SSOv1" basedir="." default="build"> 
  
-    <property name="extension.jar" value="wso2issamlssov1.jar" /> 
+    <property name="extension.jar" value="saml2ssov1.jar" /> 
  
     <property name="target"         value="1.8" /> 
     <property name="source"         value="1.8" /> 
