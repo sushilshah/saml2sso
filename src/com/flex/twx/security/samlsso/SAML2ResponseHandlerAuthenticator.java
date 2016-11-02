@@ -1,6 +1,8 @@
 package com.flex.twx.security.samlsso;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Base64.Decoder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,7 +79,25 @@ public class SAML2ResponseHandlerAuthenticator extends CustomAuthenticator {
 			}
 		}catch (Exception eValidate){
 			System.out.println("Exception: " + eValidate.getMessage());
-			eValidate.printStackTrace();
+			StringBuilder htmlForm = new StringBuilder();
+			htmlForm.append("<html><body>");
+			htmlForm.append("Invalid User id : " + xmLhandler.authResponse.userName);
+			htmlForm.append("<br>Possible resons: <br>a. User might not be created on the instance.</br> <br> b. User id valadation on Thingworx is case sensitive </br></br>");
+			htmlForm.append("</body>");
+			
+			PrintWriter writer;
+			
+				try {
+					writer = httpResponse.getWriter();
+					writer.append(htmlForm.toString());
+					writer.flush();
+					writer.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			//eValidate.printStackTrace();
+				
 			try{
 				AuthenticationUtilities.getSecurityMonitorThing().fireFailedLoginEvent(xmLhandler.authResponse.userName, eValidate.getMessage());
 			}catch (Exception e){
